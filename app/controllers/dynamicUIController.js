@@ -26,7 +26,7 @@ exports.create = (req, res) => {
     class_name:req.body.class_name,
     id_name:req.body.id_name,
     icon:req.body.icon,
-    imgage_url:req.body.imgage_url ? req.body.imgage_url : "https://media.istockphoto.com/photos/relaxed-woman-breathing-fresh-air-in-a-green-forest-picture-id1314559532?k=20&m=1314559532&s=612x612&w=0&h=5NBmEnNnvIw3IjOwOILyvQcnDHhBhn9nuiGN1_rccYQ=",
+    image_url:req.body.image_url ? req.body.image_url : "https://media.istockphoto.com/photos/relaxed-woman-breathing-fresh-air-in-a-green-forest-picture-id1314559532?k=20&m=1314559532&s=612x612&w=0&h=5NBmEnNnvIw3IjOwOILyvQcnDHhBhn9nuiGN1_rccYQ=",
     created:Date.now(),
   };
 
@@ -48,11 +48,16 @@ exports.findAll = (req, res) => {
   const body = req.query.body;
   var condition = body ? { body: { [Op.iLike]: `%${body}%` } } : null;
 
-  DynamicUI.findAll({ where: condition })
+  DynamicUI.findAll({ 
+     order: [['id', 'DESC']],
+     where:condition
+    })
     .then(data => {
         // console.log(data)
      if(data){
-        res.send(data);
+        res.send({
+          data:data
+        });
      }else{
          res.send({
             message:"Data not found"  
@@ -92,17 +97,19 @@ exports.update = (req, res) => {
     .then(num => {
       if (num == 1) {
         res.send({
-          message: "User was updated successfully with id="+id
+          updated:true,
+          message: "Record was updated successfully with id="+id
         });
       } else {
         res.send({
-          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`
+          updated:false,
+          message: `Cannot update Record with id=${id}. Maybe Tutorial was not found or req.body is empty!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating Tutorial with id=" + id
+        message: "Error updating Record with id=" + id
       });
     });
 };
@@ -118,19 +125,19 @@ exports.delete = (req, res) => {
       if (num == 1) {
         res.send({
           deleted:true,
-          message: "User was deleted successfully!"
+          message: "Record was deleted successfully!"
         });
       } else {
         res.send({
           deleted:false,
-          message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`
+          message: `Cannot delete Record with id=${id}. Maybe Tutorial was not found!`
         });
       }
     })
     .catch(err => {
       res.status(500).send({
         deleted:false,
-        message: "Could not delete Tutorial with id=" + id
+        message: "Could not delete Record with id=" + id
       });
     });
 };
@@ -142,12 +149,12 @@ exports.deleteAll = (req, res) => {
     truncate: false
   })
     .then(nums => {
-      res.send({ message: `${nums} Tutorials were deleted successfully!` });
+      res.send({ message: `${nums} Record were deleted successfully!` });
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all tutorials."
+          err.message || "Some error occurred while removing all Record."
       });
     });
 };
@@ -161,7 +168,7 @@ exports.findAllPublished = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials."
+          err.message || "Some error occurred while retrieving Record."
       });
     });
 };

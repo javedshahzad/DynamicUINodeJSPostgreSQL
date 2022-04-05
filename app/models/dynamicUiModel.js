@@ -18,7 +18,7 @@ module.exports = (sequelize, Sequelize) => {
       icon: {
         type: Sequelize.TEXT
       },
-      imgage_url: {
+      image_url: {
         type: Sequelize.TEXT
       },
       created:{
